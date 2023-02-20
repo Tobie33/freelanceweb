@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  name           String
+  email          String
+  age            Int
+  experience     Int
+  price          Int
+  description    String         @db.VarChar(300)
+  lookingForWork Boolean        @default(false)
+  roles          Role[]
+  categories     Category[]
+  sender         Conversation[] @relation(name: "sender")
+  receiver       Conversation[] @relation(name: "receiver")
+}
+
+model Role {
+  id         Int       @id @default(autoincrement())
+  name       String
+  category   Category? @relation(fields: [categoryID], references: [id])
+  categoryID Int?
+  workers    User[]
+}
+
+model Category {
+  id      Int    @id @default(autoincrement())
+  name    String
+  workers User[]
+  Role    Role[]
+}
+
+model Conversation {
+  id         Int    @id @default(autoincrement())
+  message    String @db.VarChar(300)
+  senderID   Int
+  receiverID Int
+  senders    User   @relation("sender", fields: [senderID], references: [id])
+  receivers  User   @relation("receiver", fields: [receiverID], references: [id])
+}
