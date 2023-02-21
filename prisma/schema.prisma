@@ -12,12 +12,13 @@ datasource db {
 
 model User {
   id             Int            @id @default(autoincrement())
-  name           String
+  name           String?
   email          String
-  age            Int
-  experience     Int
-  price          Int
-  description    String         @db.VarChar(300)
+  passwordHash   String
+  age            Int?
+  experience     Int?
+  price          Int?
+  description    String?        @db.VarChar(300)
   lookingForWork Boolean        @default(false)
   roles          Role[]
   categories     Category[]
@@ -30,14 +31,14 @@ model Role {
   name       String
   category   Category? @relation(fields: [categoryID], references: [id])
   categoryID Int?
-  workers    User[]
+  users      User[]
 }
 
 model Category {
-  id      Int    @id @default(autoincrement())
-  name    String
-  workers User[]
-  Role    Role[]
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[]
+  roles Role[]
 }
 
 model Conversation {

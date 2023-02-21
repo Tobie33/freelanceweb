@@ -8,9 +8,13 @@
     "start": "node main.js",
     "dev": "nodemon main.js"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@prisma/client": "^4.10.1",
     "aws-sdk": "^2.1074.0",
     "bcrypt": "^5.0.1",
