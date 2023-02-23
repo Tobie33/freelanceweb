@@ -1,0 +1,74 @@
+<%- contentFor('styles') %>
+<%- contentFor('scripts') %>
+<script>
+
+const generateWorkerCard = ({name, age, experience, price, description, roles = [] } = {}) => {
+  return `
+  <div class="card">
+    <h5 class="card-header">${name}</h5>
+    <div class="card-body">
+      <h5 class="card-title">${roles[0].name}</h5>
+      <p class="card-text">
+      <ul>
+        <li>
+          Age : ${age}
+        </li>
+        <li>
+          Experience: ${experience} Years
+        </li>
+        <li>
+          Price: $ ${price}
+        </li>
+        <p>
+          Short Intro:
+          ${description}
+        </p>
+      </ul>
+      </p>
+      <a href="#" class="btn btn-primary">Contact!</a>
+    </div>
+  </div>
+  </br>
+  `
+}
+
+const generateWorkerCards = ({ isLoading, users = [] } = {}) => {
+  if (isLoading) return `<h1>Loading...</h1>`
+  if(users.length === 0){
+    return `
+    <h1>No users available for hire!</h1>
+    `
+  }
+
+  return `
+  <div>
+      ${users.map(user => generateWorkerCard(user)).join("")}
+  </div>
+  `
+}
+
+const generatePage = (info) => {
+  const $page = $('#pages-users-index')
+  const $users = generateWorkerCards(info)
+  console.log($users)
+
+  $page.html('').append($users)
+}
+
+const getWorkers = () => {
+
+  axios({
+    method: 'GET',
+    url:'/api/users'
+  }).then((res) => {
+    generatePage({users: res.data})
+  })
+}
+
+$(document).ready(() => {
+  getWorkers()
+})
+</script>
+
+<%- contentFor('body') %>
+<div id="pages-users-index" class="container"></div>

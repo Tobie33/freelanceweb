@@ -1,0 +1,78 @@
+<script>
+  const replaceDynamicLinks = ({ isLoading, user } = {}) => {
+    const checkLoginOrSignup = window.location.pathname.split("/").reverse()[0]
+
+    if (isLoading) return $('#navbar-dynamic-links').html('loading...')
+    if(checkLoginOrSignup === "signup" || checkLoginOrSignup === "login"){
+      return $('#navbar-dynamic-links').html('')
+    }
+
+    const links = `
+      <li class="nav-item">
+        <a class="nav-link" href="/users">Common Link</a>
+      </li>
+      ${
+        user ? `
+          <li class="nav-item">
+            <a class="nav-link" href="/users">User index</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/my/profile">My profile</a>
+          </li>
+          <li class="nav-item">
+            <a id="auth-logout" class="nav-link text-danger" href="#">Logout</a>
+          </li>
+        ` : `
+          <li class="nav-item">
+            <a class="nav-link" href="/users">User index</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="auth/signup">Signup</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="auth/login">Login</a>
+          </li>
+        `
+      }
+    `
+
+    $('#navbar-dynamic-links').html(links)
+  }
+  const getMyProfile = () => {
+    replaceDynamicLinks({ isLoading: true })
+    axios({
+      method: 'GET',
+      url: '/api/my/profile',
+    }).then((resp) => {
+      replaceDynamicLinks({ user: resp.data })
+    }).catch(() => {
+      replaceDynamicLinks()
+    })
+  }
+  const handleLogout = (e) => {
+    e.preventDefault()
+    axios({
+      method: 'DELETE',
+      url: '/api/auth/logout'
+    }).then(() => {
+      window.location.href = '/'
+    })
+  }
+  $(document).ready(() => {
+    getMyProfile()
+    $('body').on('click', '#auth-logout', handleLogout)
+  })
+</script>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Goes To Main Page</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-links">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbar-links">
+      <ul id="navbar-dynamic-links" class="navbar-nav ms-auto mb-2 mb-lg-0"></ul>
+    </div>
+  </div>
+</nav>

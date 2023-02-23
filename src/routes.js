@@ -26,8 +26,14 @@ router.get('/api/categories/:id', (await import('./controllers/api/categories/sh
 // API | NOT FOUND
 router.use('/api', (await import('./controllers/api/not-found/not-found.js')).default)
 
-// PAGES | STATIC
+// PAGES | AUTH
+router.get('/auth/login', (await import('./controllers/pages/auth/login.js')).default)
+router.get('/auth/signup', (await import('./controllers/pages/auth/signup.js')).default)
 
-// PAGES| tweets
+// PAGES | STATIC
+router.get('/', (await import('./controllers/pages/static/home.js')).default)
+
+// PAGES| USERS
+router.get('/users', (await import('./controllers/pages/user/index.js')).default)
 
 export default router

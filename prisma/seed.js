@@ -269,6 +269,8 @@ const createList = async () => {
   })))
 }
 
+const generateRandomInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
+
 const createUser = async () => {
   await prisma.user.deleteMany()
 
@@ -277,12 +279,14 @@ const createUser = async () => {
   await Promise.all(Array(10).fill(null).map(() => {
     const category = categories[Math.floor(Math.random() * categories.length)]
     const role = category.roles[Math.floor(Math.random() * category.roles.length)]
+    const age = generateRandomInteger(20, 60)
+    const experience = generateRandomInteger(0, Math.floor(age - 16))
     return prisma.user.create({
       data: {
         name: faker.name.firstName(),
         email: faker.internet.email(),
-        age: Number(faker.random.numeric(2)),
-        experience: Number(faker.random.numeric(2)),
+        age,
+        experience,
         price: Number(faker.random.numeric(3)),
         description: faker.random.words(10),
         lookingForWork: faker.datatype.boolean(),
