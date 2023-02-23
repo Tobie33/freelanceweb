@@ -1,72 +1,199 @@
 <%- contentFor('styles') %>
 <%- contentFor('scripts') %>
 <script>
+window.pageData = {
+  categories: [],
+  users: [],
+  queries: {}
+}
 
-const generateWorkerCard = ({name, age, experience, price, description, roles = [] } = {}) => {
+const handleCategoryChange = (e) => {
+  const newOption = generateRoleOptions()
+  $('#role-empty-option').siblings().remove()
+  $('#role-empty-option').after(newOption)
+}
+
+const generateRoleOptions = () => {
+  const { categories, queries } = window.pageData
+  const selectedCategoryOption = queries?.category || $('#category').find(":selected").val()
+  const category = categories.find((cat) => cat.name === selectedCategoryOption)
+
+  if (category) {
+    return category.roles.map((role, index) => {
+      return `
+        <option value="${role.name}"  ${queries?.role === role.name ? 'selected' : ''}>${role.name}</option>
+      `
+    }).join("")
+  } else {
+    return ''
+  }
+}
+
+const generateCategoriesOption = () => {
+  const { categories, queries } = window.pageData
+  return categories.map((category, index) => {
+    return `
+      <option value="${category.name}" ${queries?.category === category.name ? 'selected' : ''}>${category.name}</option>
+    `
+  }).join("")
+}
+
+const generateFilter = () => {
+  const { queries } = window.pageData
+  const categoriesList = generateCategoriesOption()
+  const rolesList = generateRoleOptions()
+
   return `
-  <div class="card">
-    <h5 class="card-header">${name}</h5>
-    <div class="card-body">
-      <h5 class="card-title">${roles[0].name}</h5>
-      <p class="card-text">
-      <ul>
-        <li>
-          Age : ${age}
-        </li>
-        <li>
-          Experience: ${experience} Years
-        </li>
-        <li>
-          Price: $ ${price}
-        </li>
-        <p>
-          Short Intro:
-          ${description}
-        </p>
-      </ul>
-      </p>
-      <a href="#" class="btn btn-primary">Contact!</a>
-    </div>
-  </div>
-  </br>
+    <form id="filter" class="row row-cols-lg-auto g-3 justify-content-center align-items-center mb-3">
+      <div class="col-12">
+        <div class="input-group">
+          <div class="input-group-text">Category</div>
+          <select id="category" class="form-select" name="category">
+            <option value="">Select a Category</option>
+            ${categoriesList}
+          </select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="input-group">
+          <div class="input-group-text">Role</div>
+          <select class="form-select" name="role">
+            <option id="role-empty-option" value="">Select a Role</option>
+            ${rolesList}
+          </select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="input-group">
+          <div class="input-group-text">Filter By</div>
+          <select class="form-select" name="orderBy">
+            <option ${queries?.orderBy === 'id' ? 'selected' : ''} value="id">ID</option>
+            <option ${queries?.orderBy === 'age' ? 'selected' : ''} value="age">Age</option>
+            <option ${queries?.orderBy === 'price' ? 'selected' : ''} value="price">Price</option>
+            <option ${queries?.orderBy === 'experience' ? 'selected' : ''} value="experience">Experience</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="input-group">
+          <div class="input-group-text">Sort By</div>
+          <select class="form-select" name="sortBy">
+            <option ${queries?.sortBy === 'asc' ? 'selected' : ''} value="asc">Ascending</option>
+            <option ${queries?.sortBy === 'desc' ? 'selected' : ''} value="desc">Descending</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit" >Submit</button>
+      </div>
+      <div class="col-12">
+        <button id="reset-form" class="btn btn-danger" type="reset">Reset</button>
+      </div>
+    </form>
   `
 }
 
-const generateWorkerCards = ({ isLoading, users = [] } = {}) => {
+const generateWorkerCard = ({name, age, experience, price, description, roles = [] } = {}) => {
+  return `
+    <div class="card">
+      <h5 class="card-header">${name}</h5>
+      <div class="card-body">
+        <h5 class="card-title">${roles[0].name}</h5>
+        <p class="card-text">
+        <ul>
+          <li>
+            Age : ${age}
+          </li>
+          <li>
+            Experience: ${experience} Years
+          </li>
+          <li>
+            Price: $ ${price}
+          </li>
+          <p>
+            Short Intro:
+            ${description}
+          </p>
+        </ul>
+        </p>
+        <a href="#" class="btn btn-primary">Contact!</a>
+      </div>
+    </div>
+    </br>
+  `
+}
+
+const handleFilterSubmit = (e) => {
+  e.preventDefault()
+  const queries = parseFormData(new FormData(e.currentTarget))
+  window.pageData.queries = queries
+  generatePage({ isLoading: true })
+
+  axios({
+    method: 'GET',
+    url: '/api/wishlists',
+    params: queries
+  }).then((res) => {
+    window.pageData.users = res.data
+    generatePage()
+  })
+}
+
+const handleReset = (e) => {
+
+}
+
+const generateWorkerCards = ({ isLoading } = {}) => {
+  const { users } = window.pageData
+
   if (isLoading) return `<h1>Loading...</h1>`
   if(users.length === 0){
     return `
-    <h1>No users available for hire!</h1>
+      <h1>No users available for hire!</h1>
     `
   }
 
   return `
-  <div>
+    <div>
       ${users.map(user => generateWorkerCard(user)).join("")}
-  </div>
+    </div>
   `
 }
 
 const generatePage = (info) => {
   const $page = $('#pages-users-index')
+  const $filter = generateFilter(info)
   const $users = generateWorkerCards(info)
-  console.log($users)
 
-  $page.html('').append($users)
+  $page.html('').append($filter).append($users)
+}
+
+const getCategories = () => {
+  axios({
+    method: 'GET',
+    url:'/api/categories'
+  }).then((res) => {
+    window.pageData.categories = res.data
+    generatePage()
+  })
 }
 
 const getWorkers = () => {
-
   axios({
     method: 'GET',
     url:'/api/users'
   }).then((res) => {
-    generatePage({users: res.data})
+    window.pageData.users = res.data
+    generatePage()
   })
 }
 
 $(document).ready(() => {
+  getCategories()
   getWorkers()
+
+  $('#pages-users-index').on('input', '#category', handleCategoryChange)
+  $('#pages-users-index').on('submit', '#filter', handleFilterSubmit)
 })
 </script>
 
