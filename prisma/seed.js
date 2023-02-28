@@ -7,7 +7,7 @@ const prisma = new Client.PrismaClient()
 const createList = async () => {
   const list = [
     {
-      name: 'Computer and IT',
+      categoryName: 'Computer and IT',
       roles: [
         'Computer systems manager',
         'Network architect',
@@ -72,7 +72,7 @@ const createList = async () => {
         'Portfolio manager'
       ]
     }, {
-      name: 'Administrative',
+      categoryName: 'Administrative',
       roles: [
         'Office Assistant',
         'Administrative Assistant',
@@ -101,7 +101,7 @@ const createList = async () => {
         'Vice President of Administration'
       ]
     }, {
-      name: 'Accounting and finance',
+      categoryName: 'Accounting and finance',
       roles: [
         'Accounting manager',
         'Accounting officer',
@@ -125,7 +125,7 @@ const createList = async () => {
         'Securities analyst'
       ]
     }, {
-      name: 'Customer service',
+      categoryName: 'Customer service',
       roles: [
         'Customer Service Manager',
         'Customer Success Manager',
@@ -150,7 +150,7 @@ const createList = async () => {
         'Client Service Representative'
       ]
     }, {
-      name: 'Software development',
+      categoryName: 'Software development',
       roles: [
         ' Front-End Engineer',
         ' Back-End Engineer',
@@ -163,7 +163,7 @@ const createList = async () => {
         ' Cloud Architect'
       ]
     }, {
-      name: 'Medical and health',
+      categoryName: 'Medical and health',
       roles: [
         'Home Health Aide',
         'Medical Assistant',
@@ -188,7 +188,7 @@ const createList = async () => {
         'Dentist'
       ]
     }, {
-      name: 'Project management',
+      categoryName: 'Project management',
       roles: [
         'Project Manager',
         'Senior Project Manager',
@@ -198,7 +198,7 @@ const createList = async () => {
         'Team Leader'
       ]
     }, {
-      name: 'Research analyst',
+      categoryName: 'Research analyst',
       roles: [
         'Market Research Analyst (Marketing)',
         'Operations Research Analyst',
@@ -207,7 +207,7 @@ const createList = async () => {
         'Equity Research Analyst'
       ]
     }, {
-      name: 'Writing',
+      categoryName: 'Writing',
       roles: [
         'Author',
         'Blogger',
@@ -243,7 +243,7 @@ const createList = async () => {
         'Writer'
       ]
     }, {
-      name: 'Education and training',
+      categoryName: 'Education and training',
       roles: [
         'Academic Advisor',
         'School Counsellor',
@@ -263,7 +263,7 @@ const createList = async () => {
     data: {
       ...catData,
       roles: {
-        create: catData.roles.map((role) => ({ name: role }))
+        create: catData.roles.map((role) => ({ roleName: role }))
       }
     }
   })))
@@ -302,19 +302,9 @@ const createUser = async () => {
   }))
 }
 
-const test = async () => {
-  const users = await prisma.user.findMany({ include: {
-    roles: true,
-    categories: true }
-  })
-
-  await Promise.all(users.map((user) => console.log(user)))
-}
-
 const init = async () => {
   await createList()
   await createUser()
-  await test()
 }
 
 init()

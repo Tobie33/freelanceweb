@@ -4,7 +4,7 @@
 window.pageData = {
   categories: [],
   users: [],
-  queries: {}
+  queries: {},
 }
 
 const handleCategoryChange = (e) => {
@@ -16,12 +16,12 @@ const handleCategoryChange = (e) => {
 const generateRoleOptions = () => {
   const { categories, queries } = window.pageData
   const selectedCategoryOption = queries?.category || $('#category').find(":selected").val()
-  const category = categories.find((cat) => cat.name === selectedCategoryOption)
+  const category = categories.find((cat) => cat.categoryName === selectedCategoryOption)
 
   if (category) {
     return category.roles.map((role, index) => {
       return `
-        <option value="${role.name}"  ${queries?.role === role.name ? 'selected' : ''}>${role.name}</option>
+        <option value="${role.roleName}"  ${queries?.role === role.roleName ? 'selected' : ''}>${role.roleName}</option>
       `
     }).join("")
   } else {
@@ -33,13 +33,14 @@ const generateCategoriesOption = () => {
   const { categories, queries } = window.pageData
   return categories.map((category, index) => {
     return `
-      <option value="${category.name}" ${queries?.category === category.name ? 'selected' : ''}>${category.name}</option>
+      <option value="${category.categoryName}" ${queries?.category === category.categoryName ? 'selected' : ''}>${category.categoryName}</option>
     `
   }).join("")
 }
 
 const generateFilter = () => {
   const { queries } = window.pageData
+  console.log(queries)
   const categoriesList = generateCategoriesOption()
   const rolesList = generateRoleOptions()
 
@@ -57,7 +58,7 @@ const generateFilter = () => {
       <div class="col-12">
         <div class="input-group">
           <div class="input-group-text">Role</div>
-          <select class="form-select" name="role">
+          <select class="form-select" id="role" name="role">
             <option id="role-empty-option" value="">Select a Role</option>
             ${rolesList}
           </select>
@@ -66,21 +67,20 @@ const generateFilter = () => {
       <div class="col-12">
         <div class="input-group">
           <div class="input-group-text">Filter By</div>
-          <select class="form-select" name="orderBy">
-            <option ${queries?.orderBy === 'id' ? 'selected' : ''} value="id">ID</option>
-            <option ${queries?.orderBy === 'age' ? 'selected' : ''} value="age">Age</option>
-            <option ${queries?.orderBy === 'price' ? 'selected' : ''} value="price">Price</option>
-            <option ${queries?.orderBy === 'experience' ? 'selected' : ''} value="experience">Experience</option>
+          <select class="form-select" name="filterBy">
+            <option value="">Select a Filter</option>
+            <option ${queries?.filterBy === 'age' ? 'selected' : ''} value="age">Age</option>
+            <option ${queries?.filterBy === 'price' ? 'selected' : ''} value="price">Price</option>
+            <option ${queries?.filterBy === 'experience' ? 'selected' : ''} value="experience">Experience</option>
           </select>
         </div>
       </div>
       <div class="col-12">
         <div class="input-group">
-          <div class="input-group-text">Sort By</div>
-          <select class="form-select" name="sortBy">
-            <option ${queries?.sortBy === 'asc' ? 'selected' : ''} value="asc">Ascending</option>
-            <option ${queries?.sortBy === 'desc' ? 'selected' : ''} value="desc">Descending</option>
-          </select>
+          <div class="input-group-text">Range</div>
+            <input type="number" class="form-control" name ="smallNum" id="smallest-num-for-range" placeholder="Smallest Number" value="${queries?.smallNum || ''}">
+          <div class="input-group-text">-</div>
+            <input type="number" class="form-control" name="largeNum" id="largest-num-for-range" placeholder="Largest Number" value="${queries?.largeNum || ''}">
         </div>
       </div>
       <div class="col-12">
@@ -93,34 +93,54 @@ const generateFilter = () => {
   `
 }
 
-const generateWorkerCard = ({name, age, experience, price, description, roles = [] } = {}) => {
-  return `
-    <div class="card">
-      <h5 class="card-header">${name}</h5>
-      <div class="card-body">
-        <h5 class="card-title">${roles[0].name}</h5>
-        <p class="card-text">
-        <ul>
-          <li>
-            Age : ${age}
-          </li>
-          <li>
-            Experience: ${experience} Years
-          </li>
-          <li>
-            Price: $ ${price}
-          </li>
-          <p>
-            Short Intro:
-            ${description}
+const generateUserCard = (users) => {
+  let test = ""
+  users.map((user,index)=>{
+    const {id, name, age, experience, price, description, roles = []} = user
+    const {roleName} = roles[0]
+    test += `
+      <div class="card" id="user-card">
+        <h5 class="card-header">${name}</h5>
+        <div class="card-body">
+          <h5 class="card-title">${roleName}</h5>
+          <p class="card-text">
+          <ul>
+            <li>
+              Age : ${age}
+            </li>
+            <li>
+              Experience: ${experience} Years
+            </li>
+            <li>
+              Price: $ ${price}
+            </li>
+            <p>
+              Short Intro:
+              ${description}
+            </p>
+          </ul>
           </p>
-        </ul>
-        </p>
-        <a href="#" class="btn btn-primary">Contact!</a>
+          <a id="${index}" href="#" class="btn btn-primary contact-buttons" value="${id}">Contact!</a>
+        </div>
       </div>
-    </div>
-    </br>
-  `
+      </br>
+    `
+  })
+  return test
+}
+
+const handleUserContact = (e) => {
+
+  const buttonInfo = e.target
+  const id = $(buttonInfo).attr("value")
+
+  axios({
+    method: 'GET',
+    url: `/api/users/${id}`
+  }).then((res)=> {
+    window.location.href= `/users/${id}`
+  })
+
 }
 
 const handleFilterSubmit = (e) => {
@@ -131,7 +151,7 @@ const handleFilterSubmit = (e) => {
 
   axios({
     method: 'GET',
-    url: '/api/wishlists',
+    url: '/api/users',
     params: queries
   }).then((res) => {
     window.pageData.users = res.data
@@ -139,14 +159,13 @@ const handleFilterSubmit = (e) => {
   })
 }
 
-const handleReset = (e) => {
-
+const handleFilterReset = (e) => {
+  window.location = window.location
 }
 
-const generateWorkerCards = ({ isLoading } = {}) => {
+const generateUserCards = () => {
   const { users } = window.pageData
 
-  if (isLoading) return `<h1>Loading...</h1>`
   if(users.length === 0){
     return `
       <h1>No users available for hire!</h1>
@@ -155,17 +174,27 @@ const generateWorkerCards = ({ isLoading } = {}) => {
 
   return `
     <div>
-      ${users.map(user => generateWorkerCard(user)).join("")}
+      ${generateUserCard(users)}
     </div>
   `
 }
 
-const generatePage = (info) => {
+const generatePage = () => {
   const $page = $('#pages-users-index')
-  const $filter = generateFilter(info)
-  const $users = generateWorkerCards(info)
+  const $filter = generateFilter()
+  const $users = generateUserCards()
 
   $page.html('').append($filter).append($users)
+}
+
+const getUsers = () => {
+  axios({
+    method: 'GET',
+    url:'/api/users'
+  }).then((res) => {
+    window.pageData.users = res.data
+    getCategories()
+  })
 }
 
 const getCategories = () => {
@@ -178,22 +207,14 @@ const getCategories = () => {
   })
 }
 
-const getWorkers = () => {
-  axios({
-    method: 'GET',
-    url:'/api/users'
-  }).then((res) => {
-    window.pageData.users = res.data
-    generatePage()
-  })
-}
-
 $(document).ready(() => {
-  getCategories()
-  getWorkers()
+  getUsers()
 
   $('#pages-users-index').on('input', '#category', handleCategoryChange)
   $('#pages-users-index').on('submit', '#filter', handleFilterSubmit)
+  $('#pages-users-index').on('reset', '#filter', handleFilterReset)
+  $('#pages-users-index').on('click','.contact-buttons', handleUserContact)
+
 })
 </script>
 

@@ -1,0 +1,116 @@
+<%- contentFor('styles') %>
+<%- contentFor('scripts') %>
+<script>
+const id = window.location.pathname.split('/').reverse()[0]
+window.pageData = {
+  selectedUser:{},
+  loggedInUser:{}
+}
+const generateUserCard = () => {
+  const {id, name, age, experience, price, description, roles = []} = window.pageData.selectedUser
+  const {roleName} = roles[0]
+  return `
+    <div class="card" id="user-card">
+      <h5 class="card-header">${name}</h5>
+      <div class="card-body">
+        <h5 class="card-title">${roleName}</h5>
+        <p class="card-text">
+        <ul>
+          <li>
+            Age : ${age}
+          </li>
+          <li>
+            Experience: ${experience} Years
+          </li>
+          <li>
+            Price: $ ${price}
+          </li>
+          <p>
+            Short Intro:
+            ${description}
+          </p>
+        </ul>
+        </p>
+      </div>
+    </div>
+    </br>
+  `
+}
+
+const generateContactInfo = () => {
+  const {email} = window.pageData.loggedInUser
+  return `
+    <form id="message-form">
+      <div class="mb-3">
+        <label for="sender-email" class="form-label">Your Email address: </label>
+        <input type="email" class="form-control" id="sender-email" placeholder="Your Email address" value="${email}" required>
+      </div>
+      <div class="mb-3">
+        <label for="sender-email" class="form-label">Your Phone Number: </label>
+        <input type="tel" class="form-control" id="sender-phone-number" placeholder="Your Phone Number">
+      </div>
+      <div class="mb-3">
+        <label for="sender-message" class="form-label">Your Message:</label>
+        <textarea class="form-control" id="sender-message" rows="5" placeholder="Your message: " required></textarea>
+      </div>
+      <div>
+        <button id="submit-button" class="btn btn-primary" type="submit" >Submit</button>
+      </div>
+    </form>
+  `
+}
+
+
+const generatePage = () => {
+  const $page = $('#user-contact-page')
+  const $userCard = generateUserCard()
+  const $contactCard = generateContactInfo()
+
+  $page.html('').append($userCard).append($contactCard)
+}
+
+const getSelectedUser = () => {
+  axios({
+    method: 'GET',
+    url:`/api/users/${id}`
+  }).then((res) => {
+    window.pageData.selectedUser = res.data
+    getLoggedInUser()
+  })
+}
+
+const getLoggedInUser = () => {
+  axios({
+    method: 'GET',
+    url:`/api/my/profile`
+  }).then((res)=> {
+    window.pageData.loggedInUser = res.data
+    generatePage()
+  })
+}
+
+const handleSubmitMessage = (e) => {
+  e.preventDefault()
+
+  const data = parseFormData(new FormData(e.target))
+  console.log(data)
+
+  axios({
+    method:'POST',
+    url:'/api/my/conversations',
+    data
+  }).then((res)=>{
+    console.log(hi)
+  })
+
+}
+
+// Functions that will be invoked on page load
+$(document).ready(() => {
+  getSelectedUser()
+  $('#user-contact-page').on('submit','#message-form',handleSubmitMessage)
+})
+</script>
+
+<%- contentFor('body') %>
+<div id="user-contact-page" class="container"></div>

@@ -7,6 +7,10 @@ const controllerApiFindTweet = async (req, res) => {
     const requiredUser = await prisma.user.findUnique({
       where: {
         id: Number(id) },
+      include: {
+        roles: true,
+        categories: true
+      },
       rejectOnNotFound: true
     })
     return res.status(200).json(requiredUser)

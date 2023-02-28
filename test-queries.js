@@ -1,7 +1,7 @@
 import prisma from './src/controllers/_helpers/prisma.js'
 
 const test = async () => {
-  // /api/users?
+  // /api/users?category=Writing&role=Dog writer&age[gte]=20&age[lte]=30
   const results = await prisma.user.findMany({
     where: {
       categories: {
@@ -14,18 +14,22 @@ const test = async () => {
           name: 'Dog writer'
         }
       },
-      age: {
-        gte: 20,
-        lte: 30
-      },
-      experience: {
-        gte: 1,
-        lte: 5
-      },
-      price: {
-        gte: 500,
-        lte: 1000
+      [filterBy]: {
+        gte: smallestNum,
+        lte: largestNum
       }
+      // age: {
+      //   gte: 20,
+      //   lte: 30
+      // },
+      // experience: {
+      //   gte: 1,
+      //   lte: 5
+      // },
+      // price: {
+      //   gte: 500,
+      //   lte: 1000
+      // }
     },
     include: {
       categories: true,

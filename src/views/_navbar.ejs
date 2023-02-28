@@ -9,13 +9,10 @@
 
     const links = `
       <li class="nav-item">
-        <a class="nav-link" href="/users">Common Link</a>
+        <a class="nav-link" href="/users">User index</a>
       </li>
       ${
         user ? `
-          <li class="nav-item">
-            <a class="nav-link" href="/users">User index</a>
-          </li>
           <li class="nav-item">
             <a class="nav-link" href="/my/profile">My profile</a>
           </li>
@@ -23,9 +20,6 @@
             <a id="auth-logout" class="nav-link text-danger" href="#">Logout</a>
           </li>
         ` : `
-          <li class="nav-item">
-            <a class="nav-link" href="/users">User index</a>
-          </li>
           <li class="nav-item">
             <a class="nav-link" href="auth/signup">Signup</a>
           </li>

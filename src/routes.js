@@ -33,7 +33,11 @@ router.get('/auth/signup', (await import('./controllers/pages/auth/signup.js')).
 // PAGES | STATIC
 router.get('/', (await import('./controllers/pages/static/home.js')).default)
 
+// PAGES | MY PROFILE
+router.get('/my/profile', (await import('./controllers/pages/my/show.js')).default)
+
 // PAGES| USERS
 router.get('/users', (await import('./controllers/pages/user/index.js')).default)
+router.get('/users/:id', (await import('./controllers/pages/user/show.js')).default)
 
 export default router

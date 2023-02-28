@@ -28,17 +28,17 @@ model User {
 
 model Role {
   id         Int       @id @default(autoincrement())
-  name       String
+  roleName   String
   category   Category? @relation(fields: [categoryID], references: [id])
   categoryID Int?
   users      User[]
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  name  String
-  users User[]
-  roles Role[]
+  id           Int    @id @default(autoincrement())
+  categoryName String
+  users        User[]
+  roles        Role[]
 }
 
 model Conversation {

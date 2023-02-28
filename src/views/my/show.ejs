@@ -1,0 +1,68 @@
+<%- contentFor('styles') %>
+<%- contentFor('scripts') %>
+<script>
+window.pageData = {
+  user:{}
+}
+
+const generateUserProfilePage = () => {
+  const {email} = window.pageData.user
+  return `
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+  </div>
+  `
+
+}
+
+// Our main function that will regenerate the "whole" page given the data
+const generatePage = (info) => {
+  const $page = $('#my-profile-page')
+  const $profile = generateUserProfilePage()
+
+  $page.html('').append($profile)
+}
+
+const getLoggedInUser = () => {
+  axios({
+    method: 'GET',
+    url:`/api/my/profile`
+  }).then((res)=> {
+    window.pageData.loggedInUser = res.data
+    generatePage()
+  })
+}
+
+// Functions that will be invoked on page load
+$(document).ready(() => {
+  getLoggedInUser()
+})
+</script>
+
+<%- contentFor('body') %>
+<div id="my-profile-page" class="container"></div>

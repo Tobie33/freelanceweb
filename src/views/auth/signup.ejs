@@ -60,7 +60,7 @@ const handleSignup = (e) => {
     url: '/api/auth/signup',
     data
   }).then(() => {
-    window.location.href = `/my/wishlists`
+    window.location.href = `/users`
   }).catch((err) => {
     generatePage({
       user: parseFormData(data),
