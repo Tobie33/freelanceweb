@@ -28,7 +28,7 @@ model User {
 
 model Role {
   id         Int       @id @default(autoincrement())
-  roleName   String
+  roleName   String    @unique
   category   Category? @relation(fields: [categoryID], references: [id])
   categoryID Int?
   users      User[]
@@ -36,7 +36,7 @@ model Role {
 
 model Category {
   id           Int    @id @default(autoincrement())
-  categoryName String
+  categoryName String @unique
   users        User[]
   roles        Role[]
 }

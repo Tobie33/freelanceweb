@@ -10,6 +10,7 @@ router.delete('/api/auth/logout', (await import('./controllers/api/auth/logout.j
 
 // API | MY PROFILE
 router.get('/api/my/profile', authenticateUser('json'), (await import('./controllers/api/my/profile/show.js')).default)
+router.put('/api/my/profile', authenticateUser('json'), (await import('./controllers/api/my/profile/update.js')).default)
 
 // API | MY CONVERSATIONS
 router.post('/api/my/conversations', authenticateUser('json'), (await import('./controllers/api/my/conversations/create.js')).default)

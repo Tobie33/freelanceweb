@@ -1,10 +1,11 @@
 <%- contentFor('styles') %>
 <%- contentFor('scripts') %>
 <script>
-const id = window.location.pathname.split('/').reverse()[0]
+const selectedUserID = window.location.pathname.split('/').reverse()[0]
 window.pageData = {
   selectedUser:{},
-  loggedInUser:{}
+  loggedInUser:{},
+  messageSent: false
 }
 const generateUserCard = () => {
   const {id, name, age, experience, price, description, roles = []} = window.pageData.selectedUser
@@ -38,9 +39,14 @@ const generateUserCard = () => {
 }
 
 const generateContactInfo = () => {
-  const {email} = window.pageData.loggedInUser
+  const {id, email} = window.pageData.loggedInUser
+  const {messageSent} = window.pageData
   return `
     <form id="message-form">
+      <div class="mb-3">
+        <label for="sender-email" class="form-label">Your Email address: </label>
+        <input type="email" class="form-control" id="sender-email" placeholder="Your Email address" value="${email}" required>
+      </div>
       <div class="mb-3">
         <label for="sender-email" class="form-label">Your Email address: </label>
         <input type="email" class="form-control" id="sender-email" placeholder="Your Email address" value="${email}" required>
@@ -54,9 +60,24 @@ const generateContactInfo = () => {
         <textarea class="form-control" id="sender-message" rows="5" placeholder="Your message: " required></textarea>
       </div>
       <div>
-        <button id="submit-button" class="btn btn-primary" type="submit" >Submit</button>
+        <button id="submit-button" class="btn btn-primary" type="submit" data-bs-toggle="modal" data-bs-target="#message-sent-modal" >Submit</button>
       </div>
-    </form>
+      <div class="modal fade" id="message-sent-modal" tabindex="-1" aria-labelledby="message-sent" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="message-sent">Message Sent!</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Your message has been sent!</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+      </form>
   `
 }
 
@@ -72,7 +93,7 @@ const generatePage = () => {
 const getSelectedUser = () => {
   axios({
     method: 'GET',
-    url:`/api/users/${id}`
+    url:`/api/users/${selectedUserID}`
   }).then((res) => {
     window.pageData.selectedUser = res.data
     getLoggedInUser()
@@ -92,7 +113,15 @@ const getLoggedInUser = () => {
 const handleSubmitMessage = (e) => {
   e.preventDefault()
 
-  const data = parseFormData(new FormData(e.target))
+  let {messageSent} = window.pageData
+  messageSent = false
+  const {id} = window.pageData.loggedInUser
+  const loggedInUserID = id
+  let data = {
+    senderID:loggedInUserID,
+    message:$('#sender-message').val(),
+    receiverID:selectedUserID
+  }
   console.log(data)
 
   axios({
@@ -100,7 +129,8 @@ const handleSubmitMessage = (e) => {
     url:'/api/my/conversations',
     data
   }).then((res)=>{
-    console.log(hi)
+    messageSent = true
+    generatePage()
   })
 
 }

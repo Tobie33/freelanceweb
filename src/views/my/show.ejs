@@ -2,50 +2,157 @@
 <%- contentFor('scripts') %>
 <script>
 window.pageData = {
-  user:{}
+  user:{},
+  categories:{},
+  category: '',
+  role: ''
+}
+
+const handleCategoryChange = () => {
+  window.pageData.category = $( ".category-option:selected" ).length > 0 ? $( "#category" ).val() : null
+  const newRoles = generateRoleOptions()
+  $('.role-empty-option').siblings().remove()
+  $('.role-empty-option').after(newRoles)
+}
+
+const handleRoleChange = () => {
+  window.pageData.role = $( ".role-option:selected" ).length > 0 ? $( "#roles" ).val() : null
+  console.log(window.pageData.role)
+}
+
+const generateRoleOptions = () => {
+  const { categories, category, role } = window.pageData
+  const matchedCategory = categories.find((cat) => cat.categoryName === category)
+  return matchedCategory?.roles?.map(r => {
+    return `
+      <option class="role-option" value="${r.roleName}" ${role === r.roleName ? 'selected' : ''}>${r.roleName}</option>
+    `
+  })?.join("")
+}
+
+const generateCategoriesOption = () => {
+  const { categories, category } = window.pageData
+  return categories.map(cat => {
+    return `
+      <option class="category-option" value="${cat.categoryName}" ${category === cat.categoryName ? 'selected' : ''}>${cat.categoryName}</option>
+    `
+  }).join("")
 }
 
 const generateUserProfilePage = () => {
-  const {email} = window.pageData.user
+  const {user, rolesOption, category} = window.pageData
+  let rolesList = ""
+  const categoriesList = generateCategoriesOption()
+  if(category){
+    rolesList = generateRoleOptions()
+  }
   return `
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
-  <div class="mb-3">
-    <label for="exampleFormControlInput1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-  </div>
+    <form id="user-info">
+      <div class="card card-body mb-3">
+        <div class="mb-3">
+          <label for="user-name" class="form-label">Your name: </label>
+          <input type="text" class="form-control" name="name" id="user-name" value="${user?.name || ''}">
+        </div>
+        <div class="mb-3">
+          <label for="user-email" class="form-label">Your Email: </label>
+          <input type="email" class="form-control" id="user-email" value="${user?.email || ''}" required>
+        </div>
+          <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#hire-information"   aria-expanded="false" aria-controls="hire-information">
+          Looking for jobs?
+        </button>
+        <div class="collapse ${user?.lookingForWork && 'show'}" id="hire-information">
+          <div class="card card-body">
+            <div class="mb-3">
+              <label for="categories" class="form-label">Category: </label>
+              <div class="input-group">
+                <select id="category" class="form-select" name="categories" value="${user?.categories?.[0]?.categoryName || ''}">
+                  <option value="">Select a Category</option>
+                  ${categoriesList}
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="roles" class="form-label">Role: </label>
+              <div class="input-group">
+                <select id="roles" class="form-select" name="roles" value="${user?.roles?.[0]?.roleName || ''}">
+                  <option class="role-empty-option" value="">Select a Role</option>
+                  ${category? rolesList : ''}
+                </select>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="user-age" class="form-label">Age: </label>
+              <input type="number" class="form-control" id="user-age" name="age" value="${user?.age || ''}">
+            </div>
+            <div class="mb-3">
+              <label for="user-experience" class="form-label">Year(s) of Experience: </label>
+              <input type="number" class="form-control" id="user-experience" value="${user?.experience || user?.experience == 0 ? user.experience : ''}">
+            </div>
+            <div class="mb-3">
+              <label for="user-price" class="form-label">Price for Hire: </label>
+              <input type="number" class="form-control" id="user-price" value="${user?.price || ''}">
+            </div>
+            <div class="mb-3">
+              <label for="user-description" class="form-label">Description: </label>
+              <input type="text" class="form-control" id="user-description" value="${user?.description || ''}">
+            </div>
+            <div class="form-check form-switch py-3" style="font-size: 18px;">
+              <input class="form-check-input" type="checkbox" role="switch" id="user-look-for-work" ${user?.lookingForWork ? 'checked' :''}>
+              <label class="form-check-label" for="user-look-for-work">Looking for Work?</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary py-3 px-5" type="submit" id='save-button'>Save</button>
+      </div>
+    </form>
   `
-
 }
 
-// Our main function that will regenerate the "whole" page given the data
-const generatePage = (info) => {
+const generatePage = () => {
   const $page = $('#my-profile-page')
   const $profile = generateUserProfilePage()
 
   $page.html('').append($profile)
+}
+
+const handleSaveData = (e) => {
+  e.preventDefault()
+
+  const data = {
+    name: $('#user-name').val(),
+    email: $('#user-email').val(),
+    lookingForWork: $('#user-look-for-work').is(":checked"),
+    cv: {
+      age: $('#user-age').val(),
+      experience: $('#user-experience').val(),
+      price: $('#user-price').val(),
+      description: $('#user-description').val(),
+      categories: $("#category").val(),
+      roles: $("#roles").val(),
+    }
+  }
+
+  axios({
+    method: 'PUT',
+    url: '/api/my/profile',
+    data
+  }).then((resp) => {
+    generatePage({ user: resp.data.user })
+  }).catch((err) => {
+    generatePage({ errors: err.response.data, user: data })
+  })
+}
+
+const getCategories = () => {
+  axios({
+    method: 'GET',
+    url:'/api/categories'
+  }).then((res) => {
+    window.pageData.categories = res.data
+    getLoggedInUser()
+  })
 }
 
 const getLoggedInUser = () => {
@@ -53,14 +160,22 @@ const getLoggedInUser = () => {
     method: 'GET',
     url:`/api/my/profile`
   }).then((res)=> {
-    window.pageData.loggedInUser = res.data
+    window.pageData.user = res.data
+    window.pageData.category = window.pageData.user?.categories?.[0]?.categoryName
+    window.pageData.role = window.pageData.user?.roles?.[0]?.roleName
     generatePage()
   })
 }
 
 // Functions that will be invoked on page load
 $(document).ready(() => {
-  getLoggedInUser()
+  getCategories()
+
+  $('#my-profile-page').on('submit','#user-info', handleSaveData)
+  $('#my-profile-page').on('change', '#category', handleCategoryChange)
+  $('#my-profile-page').on('change', '#roles', handleRoleChange)
+
+
 })
 </script>
 

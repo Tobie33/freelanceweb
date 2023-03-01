@@ -132,7 +132,6 @@ const createList = async () => {
         'Call Center Supervisor',
         'Relationship Manager',
         'Client Services Manager',
-        'Relationship Manager',
         'Client Care Manager',
         'Customer Support Manager',
         'Customer Care Manager',
