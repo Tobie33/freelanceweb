@@ -5,13 +5,25 @@ const selectedUserID = window.location.pathname.split('/').reverse()[0]
 window.pageData = {
   selectedUser:{},
   loggedInUser:{},
+  errors:{},
   messageSent: false
 }
 const generateUserCard = () => {
   const {id, name, age, experience, price, description, roles = []} = window.pageData.selectedUser
   const {roleName} = roles[0]
-  return `
-    <div class="card" id="user-card">
+  const {messageSent} = window.pageData
+  let link = ''
+  return link += ` ${
+      messageSent ? `
+        <div class="card">
+          <div class="card-body">
+            Message Sent!
+          </div>
+        </div>
+      `
+      : ''
+    }
+    <div class="card mt-3" id="user-card">
       <h5 class="card-header">${name}</h5>
       <div class="card-body">
         <h5 class="card-title">${roleName}</h5>
@@ -40,7 +52,7 @@ const generateUserCard = () => {
 
 const generateContactInfo = () => {
   const {id, email} = window.pageData.loggedInUser
-  const {messageSent} = window.pageData
+  const {messageSent,errors} = window.pageData
   return `
     <form id="message-form">
       <div class="mb-3">
@@ -48,39 +60,16 @@ const generateContactInfo = () => {
         <input type="email" class="form-control" id="sender-email" placeholder="Your Email address" value="${email}" required>
       </div>
       <div class="mb-3">
-        <label for="sender-email" class="form-label">Your Email address: </label>
-        <input type="email" class="form-control" id="sender-email" placeholder="Your Email address" value="${email}" required>
-      </div>
-      <div class="mb-3">
-        <label for="sender-email" class="form-label">Your Phone Number: </label>
-        <input type="tel" class="form-control" id="sender-phone-number" placeholder="Your Phone Number">
-      </div>
-      <div class="mb-3">
         <label for="sender-message" class="form-label">Your Message:</label>
-        <textarea class="form-control" id="sender-message" rows="5" placeholder="Your message: " required></textarea>
+        <textarea name="message" class="form-control ${errors?.message && 'is-invalid'}" id="sender-message" rows="5" placeholder="Your message: "></textarea>
+        <div class="invalid-feedback">${errors?.message || ''}</div>
       </div>
       <div>
-        <button id="submit-button" class="btn btn-primary" type="submit" data-bs-toggle="modal" data-bs-target="#message-sent-modal" >Submit</button>
+        <button id="submit-button" class="btn btn-primary" type="submit">Submit</button>
       </div>
-      <div class="modal fade" id="message-sent-modal" tabindex="-1" aria-labelledby="message-sent" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="message-sent">Message Sent!</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p>Your message has been sent!</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-      </form>
+    </form>
   `
 }
-
 
 const generatePage = () => {
   const $page = $('#user-contact-page')
@@ -113,8 +102,7 @@ const getLoggedInUser = () => {
 const handleSubmitMessage = (e) => {
   e.preventDefault()
 
-  let {messageSent} = window.pageData
-  messageSent = false
+  window.pageData.messageSent = false
   const {id} = window.pageData.loggedInUser
   const loggedInUserID = id
   let data = {
@@ -129,7 +117,11 @@ const handleSubmitMessage = (e) => {
     url:'/api/my/conversations',
     data
   }).then((res)=>{
-    messageSent = true
+    window.pageData.errors = {}
+    window.pageData.messageSent = true
+    generatePage()
+  }).catch((err) => {
+    window.pageData.errors = err.response.data
     generatePage()
   })
 

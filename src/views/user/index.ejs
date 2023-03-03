@@ -45,7 +45,7 @@ const generateFilter = () => {
   const rolesList = generateRoleOptions()
 
   return `
-    <form id="filter" class="row row-cols-lg-auto g-3 justify-content-center align-items-center mb-3">
+    <form id="filter" class="row row-cols-lg-auto g-3 justify-content-center align-items-center my-3">
       <div class="col-12">
         <div class="input-group">
           <div class="input-group-text">Category</div>
@@ -83,10 +83,10 @@ const generateFilter = () => {
             <input type="number" class="form-control" name="largeNum" id="largest-num-for-range" placeholder="Largest Number" value="${queries?.largeNum || ''}">
         </div>
       </div>
-      <div class="col-12">
+      <div class="col-6">
         <button class="btn btn-primary" type="submit" >Submit</button>
       </div>
-      <div class="col-12">
+      <div class="col-6">
         <button id="reset-form" class="btn btn-danger" type="reset">Reset</button>
       </div>
     </form>
@@ -179,12 +179,22 @@ const generateUserCards = () => {
   `
 }
 
+const generateTitle = () => {
+  return `
+  <div id="title" class="text-center mt-2">
+    <h1>All users profile</h1>
+    <p class="mt-3" style="font-size:1.1em">In here you will see all the users who are listed available for work, use our filter to select which freelancer suits you the most</p>
+  </div>
+  `
+}
+
 const generatePage = () => {
   const $page = $('#pages-users-index')
+  const $title = generateTitle()
   const $filter = generateFilter()
   const $users = generateUserCards()
 
-  $page.html('').append($filter).append($users)
+  $page.html('').append($title).append($filter).append($users)
 }
 
 const getUsers = () => {

@@ -6,43 +6,70 @@ const generateForm = ({ user, errors } = {}) => {
     <div class="row">
       <div id="form-wrapper" class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
         <form id="login-form">
-          <div class="mb-3">
-            <label for="user-email" class="form-label">Email</label>
-            <input
-              id="user-email"
-              class="form-control ${errors?.email && 'is-invalid'}"
-              name="email"
-              value="${user?.email || ''}"
-              type="email"
-            ></input>
-            <div class="invalid-feedback">${errors?.email || ''}</div>
+          <div class= "card card-body">
+            <div class="mb-3">
+              <label for="user-email" class="form-label">Email</label>
+              <input
+                id="user-email"
+                class="form-control ${errors?.email && 'is-invalid'}"
+                name="email"
+                value="${user?.email || ''}"
+                type="email"
+              ></input>
+              <div class="invalid-feedback">${errors?.email || ''}</div>
+            </div>
+            <div class="mb-3">
+              <label for="user-password" class="form-label">Password</label>
+              <input
+                id="user-password"
+                class="form-control ${errors?.password && 'is-invalid'}"
+                name="password"
+                value="${user?.password || ''}"
+                type="password"
+              ></input>
+              <div class="invalid-feedback">${errors?.password || ''}</div>
+            </div>
           </div>
-
-          <div class="mb-3">
-            <label for="user-password" class="form-label">Password</label>
-            <input
-              id="user-password"
-              class="form-control ${errors?.password && 'is-invalid'}"
-              name="password"
-              value="${user?.password || ''}"
-              type="password"
-            ></input>
-            <div class="invalid-feedback">${errors?.password || ''}</div>
+          <div id="login-button" class="mt-4 d-flex justify-content-evenly">
+            <button class="button btn btn-primary mb-3 px-4 py-3" type="submit">Submit</button>
           </div>
-
-          <button class="btn btn-primary" type="submit">Submit</button>
         </form>
       </div>
     </div>
   `
 }
 
+const generateTitle = () => {
+  return `
+  <div id="header" class="px-3 d-flex align-items-center flex-column">
+    <div id="title">
+      <h1 class="text-center my-3">Login!</h1>
+    </div>
+    <div id="brief-description">
+      <p class="text-center">Do not leak your password to anyone else. Our staff will not ask you for password or any other confidential information.</p>
+    </div>
+  </div>
+  `
+}
+
+const generateSignupDirection  = () => {
+  return `
+  <div id="signup-flexbox" class="d-flex align-items-center flex-column">
+    <div id="signup-direction" class="d-flex align-items-center flex-column mt-3 p-3 text-center">
+      <p>Haven't made an account yet? Sign up!</p>
+      <a href="/auth/signup" <button class="button btn btn-primary mb-3 px-4 py-3">Signup</button></a>
+    </div>
+  </div>
+  `
+}
+
 const generatePage = (info) => {
   const $page = $('#pages-auth-login')
-  const $title = '<h1 class="text-center">Login</h1>'
+  const $title = generateTitle()
   const $form = generateForm(info)
+  const $signupDirection = generateSignupDirection()
 
-  $page.html('').append($title).append($form)
+  $page.html('').append($title).append($form).append($signupDirection)
 }
 
 const handleLogin = (e) => {

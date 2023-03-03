@@ -1,0 +1,26 @@
+$third-color: #FBF8BE;
+$supporting-color: #234E70;
+$background-color: #FCEDDA;
+$font-color: #FBEAEB;
+
+#pages-auth-login{
+  height:100%;
+  width:100%;
+  #header{
+    #brief-description{
+      font-size: 1.2em;
+      width:60%;
+    }
+  }
+  #signup-flexbox{
+    #signup-direction {
+      font-size: 1.2em;
+      width: 20%;
+      &:hover{
+        background-color: $supporting-color;
+        border-radius: 25px;
+        color:$font-color;
+      }
+    }
+  }
+}

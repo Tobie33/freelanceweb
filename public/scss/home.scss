@@ -1,3 +1,16 @@
-#pages-home {
+$third-color: #FBF8BE;
+$supporting-color: #234E70;
+$background-color: #FCEDDA;
+$font-color: #FBEAEB;
 
+#main-page{
+  height:90%;
+  #header{
+    border-radius: 25px;
+    background-color: $supporting-color;
+    color:$font-color;
+    p{
+      font-size: 1.25em;
+    }
+  }
 }

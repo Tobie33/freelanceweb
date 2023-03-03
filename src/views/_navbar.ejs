@@ -8,24 +8,35 @@
     }
 
     const links = `
-      <li class="nav-item">
-        <a class="nav-link" href="/users">User index</a>
-      </li>
-      ${
-        user ? `
-          <li class="nav-item">
-            <a class="nav-link" href="/my/profile">My profile</a>
-          </li>
-          <li class="nav-item">
-            <a id="auth-logout" class="nav-link text-danger" href="#">Logout</a>
-          </li>
+      ${user ? `
+          <a class="nav-link" href="/users">
+            <li class="nav-item p-2">
+              All Users
+            </li>
+          </a>
+          <a class="nav-link" href="/my/profile">
+            <li class="nav-item p-2">
+              My profile
+            </li>
+          </a>
+
+          <a id="auth-logout" class="nav-link text-danger" href="#">
+            <li class="nav-item p-2">
+              Logout
+            </li>
+          </a>
         ` : `
-          <li class="nav-item">
-            <a class="nav-link" href="/auth/signup">Signup</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/auth/login">Login</a>
-          </li>
+          <a class="nav-link" href="/auth/signup">
+            <li class="nav-item p-2">
+              Signup
+            </li>
+          </a>
+
+          <a class="nav-link" href="/auth/login">
+            <li class="nav-item p-2">
+              Login
+            </li>
+          </a>
         `
       }
     `
@@ -58,13 +69,21 @@
   })
 </script>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/">Goes To Main Page</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-links">
+    <div id="main-page-button">
+      <a class="navbar-brand" href="/">
+        Main Page
+      </a>
+    </div>
+    <div id="github">
+      <a class="navbar-brand" href="https://github.com/Tobie33/freelanceweb">
+        Github
+      </a>
+    </div>
+    <button class="navbar-toggler " type="button" data-bs-toggle="collapse" data-bs-target="#navbar-links">
       <span class="navbar-toggler-icon"></span>
     </button>
-
     <div class="collapse navbar-collapse" id="navbar-links">
       <ul id="navbar-dynamic-links" class="navbar-nav ms-auto mb-2 mb-lg-0"></ul>
     </div>
